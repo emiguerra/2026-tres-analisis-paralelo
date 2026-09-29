@@ -1,16 +1,39 @@
 // fuente de video compartida por todas las páginas.
-// hoy: la cámara local (getUserMedia).
-// mañana: este es el único archivo que hay que cambiar para recibir
-// el video desde otro computador (WebRTC, NDI, tarjeta de captura, etc).
-
+// este es el único archivo que decide de dónde viene el video.
+//
 // parámetros por URL:
-//   ?camara=facetime   elige la cámara cuyo nombre contenga ese texto
-//                      (útil con tarjetas de captura USB)
+//   (ninguno)                   cámara de este computador
+//   ?emisor=macbook-a.local:8080  video que manda otro computador (ver emisor.html)
+//   ?emisor                     video desde el mismo servidor que sirve la página
+//   ?camara=facetime            elige la cámara cuyo nombre contenga ese texto
+//                               (útil con tarjetas de captura USB)
+//   ?ancho=1280&alto=720        resolución pedida a la cámara
 
-export async function obtenerVideo({ ancho = 1280, alto = 720 } = {}) {
-  const parametros = new URLSearchParams(location.search);
+import { recibirVideo } from "./red.js";
+
+const parametros = new URLSearchParams(location.search);
+
+export async function obtenerVideo({ avisar = () => {} } = {}) {
+  if (parametros.has("emisor")) {
+    const host = parametros.get("emisor") || location.host;
+    return recibirVideo(host, avisar);
+  }
+  return crearVideo(await obtenerCamara());
+}
+
+// flujo (MediaStream) de la cámara local
+export async function obtenerCamara() {
+  if (!navigator.mediaDevices) {
+    throw new Error(
+      "la cámara solo funciona en localhost o https (abrir esta página en http://localhost:8080)",
+    );
+  }
+
   const nombreCamara = parametros.get("camara");
-  const restricciones = { width: { ideal: ancho }, height: { ideal: alto } };
+  const restricciones = {
+    width: { ideal: Number(parametros.get("ancho") ?? 1280) },
+    height: { ideal: Number(parametros.get("alto") ?? 720) },
+  };
 
   // primero pedimos cualquier cámara, así el navegador entrega los nombres
   let flujo = await navigator.mediaDevices.getUserMedia({
@@ -36,15 +59,19 @@ export async function obtenerVideo({ ancho = 1280, alto = 720 } = {}) {
     }
   }
 
+  return flujo;
+}
+
+export async function listarCamaras() {
+  const dispositivos = await navigator.mediaDevices.enumerateDevices();
+  return dispositivos.filter((d) => d.kind === "videoinput");
+}
+
+export async function crearVideo(flujo) {
   const video = document.createElement("video");
   video.srcObject = flujo;
   video.muted = true;
   video.playsInline = true;
   await video.play();
   return video;
-}
-
-export async function listarCamaras() {
-  const dispositivos = await navigator.mediaDevices.enumerateDevices();
-  return dispositivos.filter((d) => d.kind === "videoinput");
 }

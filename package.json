@@ -2,9 +2,11 @@
   "name": "tres-analisis-paralelo",
   "private": true,
   "description": "prototipo: una cámara, tres análisis en paralelo (postura, rostro, ojos)",
+  "type": "module",
   "scripts": {
-    "servir": "npx --yes serve --no-clipboard -l 8080 .",
-    "ventanas": "sh abrir-ventanas.sh",
-    "start": "npm run servir & sleep 2 && npm run ventanas; wait"
+    "start": "sh abrir-ventanas.sh",
+    "servir": "node servidor.js",
+    "emisor": "sh abrir-ventanas.sh emisor",
+    "receptor": "test -n \"$EMISOR\" || { echo 'falta EMISOR, ej: EMISOR=macbook-a.local:8080 npm run receptor'; exit 1; } && sh abrir-ventanas.sh"
   }
 }

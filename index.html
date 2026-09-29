@@ -37,12 +37,18 @@
         <li><a href="ojos.html">ojos</a>: abiertos / cerrados, parpadeos y dirección de la mirada</li>
       </ol>
       <p>
+        <a href="emisor.html">emisor</a>: manda la cámara de este computador por red.
+        en el otro computador, abrir cualquier página con
+        <code>?emisor=nombre-o-ip:8080</code>
+      </p>
+      <p>
         teclas: <kbd>v</kbd> video, <kbd>e</kbd> espejo, <kbd>h</kbd> texto de estado,
         <kbd>f</kbd> pantalla completa
       </p>
       <p>
         parámetros: <code>?camara=nombre</code> elige cámara por nombre,
-        <code>?espejo=0</code> desactiva el espejo
+        <code>?espejo=0</code> desactiva el espejo,
+        <code>?emisor=host:puerto</code> recibe el video por red
       </p>
     </main>
   </body>

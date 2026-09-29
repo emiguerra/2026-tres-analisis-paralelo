@@ -15,7 +15,7 @@ export const canal = new BroadcastChannel("analisis");
 
 export function crearBoceto({
   titulo,
-  cargar = async () => null, // devuelve el/los modelos
+  cargar = async () => null, // (video) => el/los modelos
   analizar = () => null, // (modelo, video, tiempoMs) => resultado
   resumir = null, // (resultado) => objeto pequeño para compartir
   dibujar = () => {}, // (p, resultado, herramientas) => void
@@ -88,9 +88,10 @@ export function crearBoceto({
 
     async function iniciar() {
       try {
-        video = await obtenerVideo();
+        // avisar permite que la fuente muestre su estado (ej: reconectando…)
+        video = await obtenerVideo({ avisar: (texto) => (estado = texto) });
         estado = "cargando modelo…";
-        modelo = await cargar();
+        modelo = await cargar(video);
         listo = true;
         estado = "";
       } catch (error) {
