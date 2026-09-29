@@ -1,2 +1,18 @@
 # Apple
 .DS_Store
+
+# node
+node_modules/
+npm-debug.log*
+
+# perfil de Chrome creado por abrir-ventanas.sh
+# (contiene caché, cookies y permisos de cámara)
+.perfil-chrome/
+
+# variables de entorno y secretos
+.env
+.env.*
+
+# editores
+*.swp
+*~
