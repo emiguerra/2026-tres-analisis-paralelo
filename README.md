@@ -2,6 +2,8 @@
 
 prototipo para una instalación multimedia: una cámara, tres análisis en paralelo, cada uno en su propia ventana (y más adelante en su propio computador y proyector).
 
+para usarlo sin entrar en detalles técnicos: [MANUAL.md](MANUAL.md).
+
 | ventana | archivo | qué hace |
 | --- | --- | --- |
 | 0 · cámara | [camara.html](camara.html) | video en vivo + datos que publican las otras ventanas |
@@ -10,7 +12,17 @@ prototipo para una instalación multimedia: una cámara, tres análisis en paral
 | 3 · ojos | [ojos.html](ojos.html) | ojos abiertos / cerrados, parpadeos por minuto, dirección de la mirada, zoom a los ojos |
 | emisor | [emisor.html](emisor.html) | manda la cámara de este computador a otro por red |
 
-hecho con [p5.js](https://p5js.org) (modo instancia) y [MediaPipe Tasks Vision](https://ai.google.dev/edge/mediapipe/solutions/guide), todo en el navegador. no hay que instalar nada más que node: las bibliotecas y modelos se cargan desde CDN, y el servidor ([servidor.js](servidor.js)) no tiene dependencias.
+hecho con [p5.js](https://p5js.org) (modo instancia) y [MediaPipe Tasks Vision](https://ai.google.dev/edge/mediapipe/solutions/guide), todo en el navegador. no hay que instalar nada más que node, y el servidor ([servidor.js](servidor.js)) no tiene dependencias.
+
+## antes de empezar: descargar bibliotecas y modelos
+
+una sola vez, con internet, en cada computador (o copiando la carpeta `recursos/` de uno a otro):
+
+```sh
+npm run descargar
+```
+
+baja p5, MediaPipe y los modelos `.task` (unos 60 MB) a `recursos/`. desde ahí todo funciona sin internet, solo con la red local. el servidor los manda con caché larga, así que el navegador los lee de su caché en vez de pedirlos cada vez.
 
 ## modo 1: un computador
 
@@ -70,12 +82,17 @@ detalles:
 - `?ancho=1920&alto=1080` resolución pedida a la cámara
 - `?espejo=0` empieza sin espejo
 - `?bitrate=8` (solo emisor) megabits por segundo por receptor
+- `?delegado=CPU` corre los modelos en la CPU en vez de la GPU (para comparar, ej: en una Raspberry Pi)
+- `?postura=lite` modelo de postura liviano: más rápido, menos preciso
+
+con los scripts, los parámetros extra van en `PARAMETROS`, ej: `PARAMETROS="delegado=CPU&postura=lite" npm run receptor -- postura`.
 
 ## estructura
 
 ```text
 servidor.js          archivos estáticos + señalización WebRTC (node, sin dependencias)
-abrir-ventanas.sh    abre páginas como ventanas de Chrome (y el servidor si no está corriendo)
+descargar.js         baja bibliotecas y modelos a recursos/ (una vez, con internet)
+abrir-ventanas.sh    abre páginas como ventanas de Chrome o Chromium (y el servidor si no está corriendo)
 compartido/
   fuente.js    de dónde viene el video: cámara local o red
   red.js       WebRTC: emitirVideo() y recibirVideo()
@@ -101,5 +118,3 @@ cada página llama a `crearBoceto({ titulo, cargar, analizar, resumir, dibujar }
 el modo 2 ya sirve para esto: un emisor (A) y tres receptores, cada uno con `npm run receptor -- postura`, `-- rostro` y `-- ojos`.
 
 la alternativa por hardware es cámara → splitter HDMI → una tarjeta de captura USB en cada computador. cada computador ve una webcam normal (modo 1, con `?camara=<nombre de la tarjeta>`), sin red de por medio.
-
-para funcionar sin internet, descargar los archivos de p5, MediaPipe (`wasm/`) y los modelos `.task`, y cambiar las rutas en los `.html` y en `compartido/modelos.js`.

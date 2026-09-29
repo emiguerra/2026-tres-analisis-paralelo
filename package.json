@@ -6,6 +6,7 @@
   "scripts": {
     "start": "sh abrir-ventanas.sh",
     "servir": "node servidor.js",
+    "descargar": "node descargar.js",
     "emisor": "sh abrir-ventanas.sh emisor",
     "receptor": "test -n \"$EMISOR\" || { echo 'falta EMISOR, ej: EMISOR=macbook-a.local:8080 npm run receptor'; exit 1; } && sh abrir-ventanas.sh"
   }

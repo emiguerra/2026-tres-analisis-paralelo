@@ -6,6 +6,7 @@
 
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { networkInterfaces, hostname } from "node:os";
 import { join, normalize, extname, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -145,7 +146,11 @@ async function servirArchivo(respuesta, ruta) {
     const contenido = await readFile(join(RAIZ, relativa));
     respuesta.writeHead(200, {
       "content-type": TIPOS[extname(relativa)] ?? "application/octet-stream",
-      "cache-control": "no-cache",
+      // recursos/ tiene la versión en la ruta y nunca cambia: el navegador lo
+      // guarda en su caché (y el wasm ya compilado) y no lo vuelve a pedir
+      "cache-control": relativa.startsWith("recursos")
+        ? "public, max-age=31536000, immutable"
+        : "no-cache",
     });
     respuesta.end(contenido);
   } catch {
@@ -170,4 +175,7 @@ servidor.listen(PUERTO, "0.0.0.0", () => {
   console.log(`servidor en http://localhost:${PUERTO}`);
   console.log("desde otro computador en la misma red:");
   for (const direccion of direccionesLocales()) console.log(`  http://${direccion}`);
+  if (!existsSync(join(RAIZ, "recursos"))) {
+    console.warn("\nfaltan las bibliotecas y modelos: correr `npm run descargar` (con internet, una vez)");
+  }
 });

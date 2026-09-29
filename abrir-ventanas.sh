@@ -8,7 +8,9 @@
 #   EMISOR=macbook-a.local:8080 sh abrir-ventanas.sh              las 4, video por red
 #   EMISOR=macbook-a.local:8080 sh abrir-ventanas.sh postura      una sola, video por red
 #
-# variables opcionales: PUERTO=8080  ANCHO=800  ALTO=500  EMISOR=host:puerto
+#   PARAMETROS="delegado=CPU&postura=lite" sh abrir-ventanas.sh postura
+#
+# variables opcionales: PUERTO=8080  ANCHO=800  ALTO=500  EMISOR=host:puerto  PARAMETROS=...
 
 cd "$(dirname "$0")" || exit 1
 
@@ -21,6 +23,9 @@ PAGINAS="${*:-camara postura rostro ojos}"
 CONSULTA=""
 if [ -n "$EMISOR" ]; then
   CONSULTA="?emisor=$EMISOR"
+fi
+if [ -n "$PARAMETROS" ]; then
+  CONSULTA="${CONSULTA:-?}${CONSULTA:+&}$PARAMETROS"
 fi
 
 # perfil de Chrome separado: recuerda permisos
@@ -35,11 +40,21 @@ if ! curl -s -o /dev/null "$URL/"; then
   until curl -s -o /dev/null "$URL/"; do sleep 0.2; done
 fi
 
+# macOS: Google Chrome. linux (raspberry pi): chromium
+abrir_chrome() {
+  if [ "$(uname)" = "Darwin" ]; then
+    open -na "Google Chrome" --args "$@"
+  else
+    CHROMIUM="$(command -v chromium || command -v chromium-browser)"
+    "$CHROMIUM" "$@" >/dev/null 2>&1 &
+  fi
+}
+
 i=0
 for pagina in $PAGINAS; do
   x=$(( (i % 2) * ANCHO ))
   y=$(( (i / 2) * ALTO + 30 ))
-  open -na "Google Chrome" --args \
+  abrir_chrome \
     --user-data-dir="$PERFIL" \
     --no-first-run \
     --no-default-browser-check \

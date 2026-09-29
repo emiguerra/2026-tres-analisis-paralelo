@@ -16,3 +16,6 @@ npm-debug.log*
 # editores
 *.swp
 *~
+
+# bibliotecas y modelos descargados con npm run descargar
+recursos/
