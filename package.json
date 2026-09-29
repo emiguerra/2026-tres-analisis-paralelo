@@ -1,0 +1,10 @@
+{
+  "name": "tres-analisis-paralelo",
+  "private": true,
+  "description": "prototipo: una cámara, tres análisis en paralelo (postura, rostro, ojos)",
+  "scripts": {
+    "servir": "npx --yes serve --no-clipboard -l 8080 .",
+    "ventanas": "sh abrir-ventanas.sh",
+    "start": "npm run servir & sleep 2 && npm run ventanas; wait"
+  }
+}

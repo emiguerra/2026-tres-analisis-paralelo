@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>tres análisis paralelo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 2rem 16px;
+        background: #000;
+        color: #fff;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+      }
+      a {
+        color: #4dd2ff;
+      }
+      kbd {
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0 0.3em;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>tres análisis paralelo</h1>
+      <ol start="0">
+        <li><a href="camara.html">cámara</a>: video en vivo y datos de las otras ventanas</li>
+        <li><a href="postura.html">postura</a>: presencia y esqueleto de hasta 4 personas</li>
+        <li><a href="rostro.html">rostro</a>: malla, expresiones, orientación de la cabeza y gestos de manos</li>
+        <li><a href="ojos.html">ojos</a>: abiertos / cerrados, parpadeos y dirección de la mirada</li>
+      </ol>
+      <p>
+        teclas: <kbd>v</kbd> video, <kbd>e</kbd> espejo, <kbd>h</kbd> texto de estado,
+        <kbd>f</kbd> pantalla completa
+      </p>
+      <p>
+        parámetros: <code>?camara=nombre</code> elige cámara por nombre,
+        <code>?espejo=0</code> desactiva el espejo
+      </p>
+    </main>
+  </body>
+</html>
